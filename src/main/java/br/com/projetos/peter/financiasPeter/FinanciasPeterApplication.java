@@ -8,7 +8,7 @@ public class FinanciasPeterApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FinanciasPeterApplication.class, args);
-		System.out.println("Começando Projeto");
+		System.out.println("Começando Projeto Financeiro do Peter");
 	}
 
 }
