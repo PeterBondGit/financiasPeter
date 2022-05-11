@@ -1,21 +1,32 @@
 package br.com.projetos.peter.financiasPeter.modelo;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class FinancMes {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idFinancMes;
+	
 	@ManyToOne
 	private Usuario usuario;
+	
 	private String dsFinancMes;
 	private String dsDetalhadaMes;
 	private Double vlTotContasMes;
+	
+	@OneToMany(mappedBy = "financMes")
+	private List<FinancMesConta> financMesContas;
+	
+	@OneToMany(mappedBy = "financMes")
+	private List<FinancMesContaParc> financMesContaParcs;
 	
 	@Override
 	public int hashCode() {
@@ -81,4 +92,21 @@ public class FinancMes {
 	public void setVlTotContasMes(Double vlTotContasMes) {
 		this.vlTotContasMes = vlTotContasMes;
 	}
+	
+	public List<FinancMesConta> getFinancMesContas() {
+		return financMesContas;
+	}
+
+	public void setFinancMesContas(List<FinancMesConta> financMesContas) {
+		this.financMesContas = financMesContas;
+	}
+
+	public List<FinancMesContaParc> getFinancMesContaParcs() {
+		return financMesContaParcs;
+	}
+
+	public void setFinancMesContaParcs(List<FinancMesContaParc> financMesContaParcs) {
+		this.financMesContaParcs = financMesContaParcs;
+	}
+	
 }
