@@ -15,6 +15,7 @@ public class MonthFinanceDto {
 	private String profile;
 	private String dsFinanceMonth;
 	private String dsDetailsMonth;
+	private Double vlTotMonth;
 	private List<MonthFinanceAccountDto> listAcoount;
 	private List<MonthFinanceAccountInstallmentsDto> listAcoountInstallments;
 
@@ -30,6 +31,7 @@ public class MonthFinanceDto {
 		this.listAcoount.addAll(financMes.getFinancMesContas().stream().map(MonthFinanceAccountDto::new).collect(Collectors.toList()));
 		this.listAcoountInstallments = new ArrayList<>();
 		this.listAcoountInstallments.addAll(financMes.getFinancMesContaParcs().stream().map(MonthFinanceAccountInstallmentsDto::new).collect(Collectors.toList()));
+		//
 	}
 
 	public Long getIdUser() {
@@ -102,5 +104,13 @@ public class MonthFinanceDto {
 
 	public void setListAcoountInstallments(List<MonthFinanceAccountInstallmentsDto> listAcoountInstallments) {
 		this.listAcoountInstallments = listAcoountInstallments;
+	}
+
+	public Double getVlTotMonth() {
+		return vlTotMonth;
+	}
+
+	public void setVlTotMonth(Double vlTotMonth) {
+		this.vlTotMonth = vlTotMonth;
 	}
 }

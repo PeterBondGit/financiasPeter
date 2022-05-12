@@ -28,6 +28,14 @@ public class FinancMes {
 	@OneToMany(mappedBy = "financMes")
 	private List<FinancMesContaParc> financMesContaParcs;
 	
+	public FinancMes(String dsFinanceMonth, String dsDetailsMonth) {
+		this.dsFinancMes = dsFinanceMonth;
+		this.dsDetalhadaMes = dsDetailsMonth;
+	}
+	
+	public FinancMes() {
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

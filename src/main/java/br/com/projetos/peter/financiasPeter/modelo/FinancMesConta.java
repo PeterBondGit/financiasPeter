@@ -27,6 +27,15 @@ public class FinancMesConta {
 	
 	private LocalDateTime dtVencimento;
 	
+	public FinancMesConta(FinancMes financMes, String dsAccountMonth, Double vlAccountMonth, LocalDateTime dtFinalPaymentDate) {
+		this.financMes = financMes;
+		this.dsFinancMesConta = dsAccountMonth;
+		this.vlFinancMesConta = vlAccountMonth;
+		this.dtVencimento = dtFinalPaymentDate; 
+	}
+	
+	public FinancMesConta() {	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
