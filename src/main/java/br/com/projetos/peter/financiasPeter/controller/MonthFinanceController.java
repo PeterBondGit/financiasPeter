@@ -21,9 +21,9 @@ import br.com.projetos.peter.financiasPeter.controller.dto.MonthFinanceDto;
 import br.com.projetos.peter.financiasPeter.controller.form.AccountMonthForm;
 import br.com.projetos.peter.financiasPeter.controller.form.FinanceMonthForm;
 import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceAccountRepository;
+import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceRepository;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMes;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMesConta;
-import br.com.projetos.peter.financiasPeter.repository.MonthFinanceRepository;
 
 @RestController
 @RequestMapping("/monthFinance")

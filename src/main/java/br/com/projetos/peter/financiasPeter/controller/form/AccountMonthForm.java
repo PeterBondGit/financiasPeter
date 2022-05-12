@@ -12,9 +12,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceAccountRepository;
+import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceRepository;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMes;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMesConta;
-import br.com.projetos.peter.financiasPeter.repository.MonthFinanceRepository;
 
 public class AccountMonthForm {
 	

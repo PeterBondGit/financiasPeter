@@ -1,4 +1,4 @@
-package br.com.projetos.peter.financiasPeter.repository;
+package br.com.projetos.peter.financiasPeter.controller.repository;
 
 import java.util.Optional;
 
