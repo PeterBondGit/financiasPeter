@@ -6,6 +6,8 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +45,7 @@ public class MonthFinanceController {
 	private MonthFinanceAccountInstallmentsRepository monthFinanceAccountInstallmentsRepository;
 
 	@GetMapping("/{currentMonth}")
+	@Cacheable(value = "ContasMes")
 	public ResponseEntity<MonthFinanceDto> monthFinance(@PathVariable String currentMonth) {
 		System.out.println("Entrou aqui");
 		if ( currentMonth == null ) {
@@ -57,6 +60,7 @@ public class MonthFinanceController {
 	}
 	
 	@PostMapping
+	@CacheEvict(value = "ContasMes", allEntries = true)
 	public ResponseEntity<FinancMesDto> registerFinanceMonth (@RequestBody @Valid FinanceMonthForm form, UriComponentsBuilder uriBuilder ) {
 		FinancMes financMes = form.converter(monthFinanceRepository);
 		
@@ -66,6 +70,7 @@ public class MonthFinanceController {
 	
 	@PostMapping
 	@RequestMapping("/registerAccountInstallmentMonth")
+	@CacheEvict(value = "ContasMes", allEntries = true)
 	public ResponseEntity<FinancMesContaParcDto> registerAccountInstallmentMonth (@RequestBody @Valid AccountInstallmentMonthForm form, UriComponentsBuilder uriBuilder ) {
 		FinancMesContaParc financMesContaParc = form.converter(monthFinanceAccountInstallmentsRepository, monthFinanceRepository);
 		
@@ -75,6 +80,7 @@ public class MonthFinanceController {
 	
 	@PostMapping
 	@RequestMapping("/registerAccountMonth")
+	@CacheEvict(value = "ContasMes", allEntries = true)
 	public ResponseEntity<FinancMesContaDto> registerAccountMonth (@RequestBody @Valid AccountMonthForm form, UriComponentsBuilder uriBuilder ) {
 		FinancMesConta financMesConta = form.converter(monthFinanceAccountRepository, monthFinanceRepository);
 		
