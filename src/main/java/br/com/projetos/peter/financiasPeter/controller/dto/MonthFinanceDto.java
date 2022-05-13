@@ -20,10 +20,12 @@ public class MonthFinanceDto {
 	private List<MonthFinanceAccountInstallmentsDto> listAcoountInstallments;
 
 	public MonthFinanceDto(FinancMes financMes) {
-		this.idUser = financMes.getUsuario().getIdUsuario();
-		this.nmUser = financMes.getUsuario().getNmUsuario();
-		this.dsEmail = financMes.getUsuario().getDsEmail();
-		this.nrTelephone = financMes.getUsuario().getNrTelefone();
+		if ( financMes.getUsuario() != null ) {
+			this.idUser = financMes.getUsuario().getIdUsuario();
+			this.nmUser = financMes.getUsuario().getNmUsuario();
+			this.dsEmail = financMes.getUsuario().getDsEmail();
+			this.nrTelephone = financMes.getUsuario().getNrTelefone();
+		}
 		this.profile = null;
 		this.dsFinanceMonth = financMes.getDsFinancMes();
 		this.dsDetailsMonth = financMes.getDsDetalhadaMes();

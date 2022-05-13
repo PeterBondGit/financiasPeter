@@ -20,6 +20,19 @@ public class FinancMesContaParc {
 	private Integer nrTotParcela;
 	private Integer nrParcelaAtual;
 	
+	public FinancMesContaParc (FinancMes financMes2, String dsFinanceMonthAccountInstallment, 
+			Double vlInstallment, Integer nrTotInstallment, Integer nrCurrenteInstallment) {
+		
+		this.financMes = financMes2;
+		this.dsFinancMesContaParc = dsFinanceMonthAccountInstallment;
+		this.vlParcela = vlInstallment;
+		this.nrTotParcela = nrTotInstallment;
+		this.nrParcelaAtual = nrCurrenteInstallment;
+		
+	}
+	
+	public FinancMesContaParc () {}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
