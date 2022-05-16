@@ -5,8 +5,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.springframework.security.core.GrantedAuthority;
+
 @Entity
-public class Perfil {
+public class Perfil  implements GrantedAuthority {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -29,6 +31,11 @@ public class Perfil {
 
 	public void setDsPerfil(String dsPerfil) {
 		this.dsPerfil = dsPerfil;
+	}
+
+	@Override
+	public String getAuthority() {
+		return this.dsPerfil;
 	}
 
 }

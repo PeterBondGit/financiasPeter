@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.projetos.peter.financiasPeter.TokenService;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesContaDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesContaParcDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesDto;
@@ -27,6 +29,7 @@ import br.com.projetos.peter.financiasPeter.controller.form.FinanceMonthForm;
 import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceAccountInstallmentsRepository;
 import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceAccountRepository;
 import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceRepository;
+import br.com.projetos.peter.financiasPeter.controller.repository.UsuarioRepository;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMes;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMesConta;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMesContaParc;
@@ -43,6 +46,12 @@ public class MonthFinanceController {
 
 	@Autowired
 	private MonthFinanceAccountInstallmentsRepository monthFinanceAccountInstallmentsRepository;
+	
+	@Autowired
+	private TokenService tokenService;
+	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
 	@GetMapping("/{currentMonth}")
 	@Cacheable(value = "ContasMes")
@@ -61,13 +70,18 @@ public class MonthFinanceController {
 	
 	@PostMapping
 	@CacheEvict(value = "ContasMes", allEntries = true)
-	public ResponseEntity<FinancMesDto> registerFinanceMonth (@RequestBody @Valid FinanceMonthForm form, UriComponentsBuilder uriBuilder ) {
-		FinancMes financMes = form.converter(monthFinanceRepository);
+	public ResponseEntity<FinancMesDto> registerFinanceMonth (@RequestBody @Valid FinanceMonthForm form, UriComponentsBuilder uriBuilder, @RequestHeader("Authorization") String authorizationHeader ) {
+		String token = recuperarToken(authorizationHeader);
+		FinancMes financMes = form.converter(monthFinanceRepository, usuarioRepository, tokenService, token);
 		
 		URI uri = uriBuilder.path("/monthFinance/{currentMonth}").buildAndExpand(financMes.getDsFinancMes()).toUri();
 		return ResponseEntity.created(uri).body(new FinancMesDto(financMes)); 
 	}
 	
+	private String recuperarToken(String authorizationHeader) {
+		return authorizationHeader.substring(7, authorizationHeader.length());
+	}
+
 	@PostMapping
 	@RequestMapping("/registerAccountInstallmentMonth")
 	@CacheEvict(value = "ContasMes", allEntries = true)

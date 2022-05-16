@@ -28,9 +28,10 @@ public class FinancMes {
 	@OneToMany(mappedBy = "financMes")
 	private List<FinancMesContaParc> financMesContaParcs;
 	
-	public FinancMes(String dsFinanceMonth, String dsDetailsMonth) {
+	public FinancMes(String dsFinanceMonth, String dsDetailsMonth, Usuario usuario) {
 		this.dsFinancMes = dsFinanceMonth;
 		this.dsDetalhadaMes = dsDetailsMonth;
+		this.usuario = usuario;
 	}
 	
 	public FinancMes() {
