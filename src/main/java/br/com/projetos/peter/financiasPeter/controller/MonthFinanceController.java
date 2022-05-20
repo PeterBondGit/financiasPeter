@@ -1,8 +1,11 @@
 package br.com.projetos.peter.financiasPeter.controller;
 
 import java.net.URI;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.projetos.peter.financiasPeter.TokenService;
+import br.com.projetos.peter.financiasPeter.controller.dto.AccountMaxMonthDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesContaDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesContaParcDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesDto;
@@ -52,7 +56,38 @@ public class MonthFinanceController {
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-
+	
+	@GetMapping("/maxAccount/{currentMonth}")
+	public ResponseEntity<AccountMaxMonthDto> maxAccount(@PathVariable String currentMonth) {
+//		Double maiorValor = 0.0;
+//		String nomeContaParcelada = "";
+		
+		if ( currentMonth == null ) {
+			return ResponseEntity.notFound().build();
+		} else {
+			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(currentMonth);
+			if ( financMes.isPresent() ) {
+				
+				List<FinancMesConta> financMesContas = financMes.get().getFinancMesContas();
+				Optional<FinancMesConta> maiorContaMes = financMesContas.stream().max(Comparator.comparing(FinancMesConta::getVlFinancMesConta));
+				
+//				FinancMes financMes2 = financMes.get();
+//				if ( financMes2.getFinancMesContas() != null ) {
+//					List<FinancMesConta> financMesContas = financMes2.getFinancMesContas(); 
+//					for (FinancMesConta financMesConta : financMesContas) {
+//						if ( financMesConta.getVlFinancMesConta() > maiorValor ) {
+//							maiorValor = financMesConta.getVlFinancMesConta();
+//							nomeContaParcelada = financMesConta.getDsFinancMesConta();
+//						}
+//					}
+//				}
+//				return ResponseEntity.ok(new AccountMaxMonthDto(nomeContaParcelada, maiorValor));
+				return ResponseEntity.ok(new AccountMaxMonthDto(maiorContaMes.get().getDsFinancMesConta(), maiorContaMes.get().getVlFinancMesConta()));
+			}
+			return ResponseEntity.notFound().build();
+		}
+	}
+	
 	@GetMapping("/{currentMonth}")
 	@Cacheable(value = "ContasMes")
 	public ResponseEntity<MonthFinanceDto> monthFinance(@PathVariable String currentMonth) {
@@ -69,6 +104,7 @@ public class MonthFinanceController {
 	}
 	
 	@PostMapping
+	@Transactional
 	@CacheEvict(value = "ContasMes", allEntries = true)
 	public ResponseEntity<FinancMesDto> registerFinanceMonth (@RequestBody @Valid FinanceMonthForm form, UriComponentsBuilder uriBuilder, @RequestHeader("Authorization") String authorizationHeader ) {
 		String token = recuperarToken(authorizationHeader);
@@ -83,6 +119,7 @@ public class MonthFinanceController {
 	}
 
 	@PostMapping
+	@Transactional
 	@RequestMapping("/registerAccountInstallmentMonth")
 	@CacheEvict(value = "ContasMes", allEntries = true)
 	public ResponseEntity<FinancMesContaParcDto> registerAccountInstallmentMonth (@RequestBody @Valid AccountInstallmentMonthForm form, UriComponentsBuilder uriBuilder ) {
@@ -93,6 +130,7 @@ public class MonthFinanceController {
 	}
 	
 	@PostMapping
+	@Transactional
 	@RequestMapping("/registerAccountMonth")
 	@CacheEvict(value = "ContasMes", allEntries = true)
 	public ResponseEntity<FinancMesContaDto> registerAccountMonth (@RequestBody @Valid AccountMonthForm form, UriComponentsBuilder uriBuilder ) {

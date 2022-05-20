@@ -48,6 +48,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.GET, "/monthFinance").permitAll()
 		.antMatchers(HttpMethod.GET, "/monthFinance/*").permitAll()
 		.antMatchers(HttpMethod.POST, "/auth").permitAll()
+		.antMatchers(HttpMethod.GET, "/h2-console").permitAll()
+		.antMatchers(HttpMethod.GET, "/monthFinance/maxAccount/*").permitAll()
 //		.antMatchers(HttpMethod.DELETE, "/topicos/*").hasRole("MODERADOR")
 		.anyRequest().authenticated()
 		.and().csrf().disable()
