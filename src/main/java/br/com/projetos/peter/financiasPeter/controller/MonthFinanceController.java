@@ -69,7 +69,7 @@ public class MonthFinanceController {
 			if ( financMes.isPresent() ) {
 				
 				List<FinancMesConta> financMesContas = financMes.get().getFinancMesContas();
-				Optional<FinancMesConta> maiorContaMes = financMesContas.stream().max(Comparator.comparing(FinancMesConta::getVlFinancMesConta));
+				Optional<FinancMesConta> maiorContaMes = financMesContas.stream().max(Comparator.comparingDouble(FinancMesConta::getVlFinancMesConta));
 				
 //				FinancMes financMes2 = financMes.get();
 //				if ( financMes2.getFinancMesContas() != null ) {
