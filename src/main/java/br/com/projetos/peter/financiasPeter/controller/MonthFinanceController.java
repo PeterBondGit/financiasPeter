@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.projetos.peter.financiasPeter.TokenService;
+import br.com.projetos.peter.financiasPeter.controller.dto.AccountFinishMonthDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.AccountMaxMonthDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesContaDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesContaParcDto;
@@ -59,9 +61,6 @@ public class MonthFinanceController {
 	
 	@GetMapping("/maxAccount/{currentMonth}")
 	public ResponseEntity<AccountMaxMonthDto> maxAccount(@PathVariable String currentMonth) {
-//		Double maiorValor = 0.0;
-//		String nomeContaParcelada = "";
-		
 		if ( currentMonth == null ) {
 			return ResponseEntity.notFound().build();
 		} else {
@@ -71,17 +70,6 @@ public class MonthFinanceController {
 				List<FinancMesConta> financMesContas = financMes.get().getFinancMesContas();
 				Optional<FinancMesConta> maiorContaMes = financMesContas.stream().max(Comparator.comparingDouble(FinancMesConta::getVlFinancMesConta));
 				
-//				FinancMes financMes2 = financMes.get();
-//				if ( financMes2.getFinancMesContas() != null ) {
-//					List<FinancMesConta> financMesContas = financMes2.getFinancMesContas(); 
-//					for (FinancMesConta financMesConta : financMesContas) {
-//						if ( financMesConta.getVlFinancMesConta() > maiorValor ) {
-//							maiorValor = financMesConta.getVlFinancMesConta();
-//							nomeContaParcelada = financMesConta.getDsFinancMesConta();
-//						}
-//					}
-//				}
-//				return ResponseEntity.ok(new AccountMaxMonthDto(nomeContaParcelada, maiorValor));
 				return ResponseEntity.ok(new AccountMaxMonthDto(maiorContaMes.get().getDsFinancMesConta(), maiorContaMes.get().getVlFinancMesConta()));
 			}
 			return ResponseEntity.notFound().build();
@@ -98,6 +86,21 @@ public class MonthFinanceController {
 			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(currentMonth);
 			if ( financMes.isPresent() ) {
 				return ResponseEntity.ok(new MonthFinanceDto(financMes.get()));
+			}
+			return ResponseEntity.notFound().build();
+		}
+	}
+	
+	@GetMapping("/accountFinishMonth/{currentMonth}")
+	@Cacheable(value = "ContasMes")
+	public ResponseEntity<AccountFinishMonthDto> AccountFinish(@PathVariable String currentMonth) {
+		if ( currentMonth == null ) {
+			return ResponseEntity.notFound().build();
+		} else {
+			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(currentMonth);
+			if ( financMes.isPresent() ) {
+				List<FinancMesContaParc> financMesContasParc = financMes.get().getFinancMesContaParcs();
+				return ResponseEntity.ok(new AccountFinishMonthDto("Contas Finalizadas no mês de " + currentMonth, financMesContasParc.stream().filter(mp -> mp.getNrParcelaAtual() == mp.getNrTotParcela()).collect(Collectors.toList())));
 			}
 			return ResponseEntity.notFound().build();
 		}
