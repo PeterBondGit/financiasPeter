@@ -66,10 +66,8 @@ public class MonthFinanceController {
 		} else {
 			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(currentMonth);
 			if ( financMes.isPresent() ) {
-				
 				List<FinancMesConta> financMesContas = financMes.get().getFinancMesContas();
 				Optional<FinancMesConta> maiorContaMes = financMesContas.stream().max(Comparator.comparingDouble(FinancMesConta::getVlFinancMesConta));
-				
 				return ResponseEntity.ok(new AccountMaxMonthDto(maiorContaMes.get().getDsFinancMesConta(), maiorContaMes.get().getVlFinancMesConta()));
 			}
 			return ResponseEntity.notFound().build();
