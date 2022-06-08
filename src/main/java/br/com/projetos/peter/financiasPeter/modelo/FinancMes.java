@@ -37,6 +37,13 @@ public class FinancMes {
 	public FinancMes() {
 	}
 
+	public FinancMes(FinancMes financMes) {
+		this.usuario = financMes.getUsuario();
+		this.dsFinancMes = financMes.getDsFinancMes() + "Novo mes";
+		this.dsDetalhadaMes = financMes.getDsDetalhadaMes();
+		this.vlTotContasMes = financMes.getVlTotContasMes();
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

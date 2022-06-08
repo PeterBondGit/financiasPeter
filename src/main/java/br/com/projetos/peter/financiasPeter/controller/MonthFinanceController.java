@@ -28,6 +28,7 @@ import br.com.projetos.peter.financiasPeter.controller.dto.AccountMaxMonthDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesContaDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesContaParcDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.FinancMesDto;
+import br.com.projetos.peter.financiasPeter.controller.dto.GenerateMonthDto;
 import br.com.projetos.peter.financiasPeter.controller.dto.MonthFinanceDto;
 import br.com.projetos.peter.financiasPeter.controller.form.AccountInstallmentMonthForm;
 import br.com.projetos.peter.financiasPeter.controller.form.AccountMonthForm;
@@ -36,6 +37,7 @@ import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceAc
 import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceAccountRepository;
 import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceRepository;
 import br.com.projetos.peter.financiasPeter.controller.repository.UsuarioRepository;
+import br.com.projetos.peter.financiasPeter.controller.service.FinancMonthService;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMes;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMesConta;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMesContaParc;
@@ -77,7 +79,6 @@ public class MonthFinanceController {
 	@GetMapping("/{currentMonth}")
 	@Cacheable(value = "ContasMes")
 	public ResponseEntity<MonthFinanceDto> monthFinance(@PathVariable String currentMonth) {
-		System.out.println("Entrou aqui");
 		if ( currentMonth == null ) {
 			return ResponseEntity.notFound().build();
 		} else {
@@ -91,7 +92,7 @@ public class MonthFinanceController {
 	
 	@GetMapping("/accountFinishMonth/{currentMonth}")
 	@Cacheable(value = "ContasMes")
-	public ResponseEntity<AccountFinishMonthDto> AccountFinish(@PathVariable String currentMonth) {
+	public ResponseEntity<AccountFinishMonthDto> accountFinish(@PathVariable String currentMonth) {
 		if ( currentMonth == null ) {
 			return ResponseEntity.notFound().build();
 		} else {
@@ -127,7 +128,7 @@ public class MonthFinanceController {
 		FinancMesContaParc financMesContaParc = form.converter(monthFinanceAccountInstallmentsRepository, monthFinanceRepository);
 		
 		URI uri = uriBuilder.path("/monthFinance/{currentMonth}").buildAndExpand(financMesContaParc.getFinancMes().getDsFinancMes()).toUri();
-		return ResponseEntity.created(uri).body(new FinancMesContaParcDto(financMesContaParc));
+		return ResponseEntity.created(uri).body(new FinancMesContaParcDto(financMesContaParc, false));
 	}
 	
 	@PostMapping
@@ -139,5 +140,26 @@ public class MonthFinanceController {
 		
 		URI uri = uriBuilder.path("/monthFinance/{currentMonth}").buildAndExpand(financMesConta.getFinancMes().getDsFinancMes()).toUri();
 		return ResponseEntity.created(uri).body(new FinancMesContaDto(financMesConta));
+	}
+	
+	@PostMapping
+	@Transactional
+	@RequestMapping("/generateAccountMonth/{currentMonth}")
+	@CacheEvict(value = "ContasMes", allEntries = true)
+	public ResponseEntity<GenerateMonthDto> generateAccountMonth (@PathVariable String currentMonth, UriComponentsBuilder uriBuilder) {
+		if ( currentMonth == null ) {
+			return ResponseEntity.notFound().build();
+		} else {
+			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(currentMonth);
+			if ( financMes.isPresent() ) {
+				FinancMonthService financMonthService = new FinancMonthService();
+				FinancMes financMesNew = financMonthService.montarNovoMes(financMes.get(), monthFinanceRepository, monthFinanceAccountRepository, monthFinanceAccountInstallmentsRepository);
+				
+				URI uri = uriBuilder.path("/monthFinance/{currentMonth}").buildAndExpand(financMesNew.getDsFinancMes()).toUri();
+				return ResponseEntity.created(uri).body(new GenerateMonthDto(financMes.get().getDsFinancMes(), "Novo mês registrado com sucesso!"));
+
+			}
+			return ResponseEntity.notFound().build();
+		}
 	}
 }

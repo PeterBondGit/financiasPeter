@@ -14,12 +14,12 @@ public class FinancMesContaParcDto {
 	
 	private Integer nrCurrentInstallment;
 
-	public FinancMesContaParcDto(FinancMesContaParc financMesContaParc) {		
+	public FinancMesContaParcDto(FinancMesContaParc financMesContaParc, boolean generateAutomaticMonth) {		
 		this.currentMonth = financMesContaParc.getFinancMes().getDsFinancMes();
 		this.dsFinanceMonthAccountInstallment = financMesContaParc.getDsFinancMesContaParc();
 		this.vlInstallment = financMesContaParc.getVlParcela();
 		this.nrTotInstallmente = financMesContaParc.getNrTotParcela();
-		this.nrCurrentInstallment = financMesContaParc.getNrParcelaAtual();
+		this.nrCurrentInstallment = generateAutomaticMonth == false ? financMesContaParc.getNrParcelaAtual() : financMesContaParc.getNrParcelaAtual() + 1;
 	}
 
 	public String getCurrentMonth() {
