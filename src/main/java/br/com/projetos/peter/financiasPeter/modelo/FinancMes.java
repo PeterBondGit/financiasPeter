@@ -39,7 +39,7 @@ public class FinancMes {
 
 	public FinancMes(FinancMes financMes) {
 		this.usuario = financMes.getUsuario();
-		this.dsFinancMes = financMes.getDsFinancMes() + "Novo mes";
+		this.dsFinancMes = financMes.getDsFinancMes();
 		this.dsDetalhadaMes = financMes.getDsDetalhadaMes();
 		this.vlTotContasMes = financMes.getVlTotContasMes();
 	}
