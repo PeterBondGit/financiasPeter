@@ -41,6 +41,7 @@ import br.com.projetos.peter.financiasPeter.controller.service.FinancMonthServic
 import br.com.projetos.peter.financiasPeter.modelo.FinancMes;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMesConta;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMesContaParc;
+import br.com.projetos.peter.financiasPeter.modelo.NomeMesFinanceiro;
 
 @RestController
 @RequestMapping("/monthFinance")
@@ -66,7 +67,8 @@ public class MonthFinanceController {
 		if ( currentMonth == null ) {
 			return ResponseEntity.notFound().build();
 		} else {
-			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(currentMonth);
+			String nomeMes = NomeMesFinanceiro.MES.nomeMes(Integer.parseInt(currentMonth));
+			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(nomeMes);
 			if ( financMes.isPresent() ) {
 				List<FinancMesConta> financMesContas = financMes.get().getFinancMesContas();
 				Optional<FinancMesConta> maiorContaMes = financMesContas.stream().max(Comparator.comparingDouble(FinancMesConta::getVlFinancMesConta));
@@ -77,12 +79,12 @@ public class MonthFinanceController {
 	}
 	
 	@GetMapping("/{currentMonth}")
-	@Cacheable(value = "ContasMes")
 	public ResponseEntity<MonthFinanceDto> monthFinance(@PathVariable String currentMonth) {
 		if ( currentMonth == null ) {
 			return ResponseEntity.notFound().build();
 		} else {
-			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(currentMonth);
+			String nomeMes = NomeMesFinanceiro.MES.nomeMes(Integer.parseInt(currentMonth));
+			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(nomeMes);
 			if ( financMes.isPresent() ) {
 				return ResponseEntity.ok(new MonthFinanceDto(financMes.get()));
 			}
@@ -91,15 +93,15 @@ public class MonthFinanceController {
 	}
 	
 	@GetMapping("/accountFinishMonth/{currentMonth}")
-	@Cacheable(value = "ContasMes")
 	public ResponseEntity<AccountFinishMonthDto> accountFinish(@PathVariable String currentMonth) {
 		if ( currentMonth == null ) {
 			return ResponseEntity.notFound().build();
 		} else {
-			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(currentMonth);
+			String nomeMes = NomeMesFinanceiro.MES.nomeMes(Integer.parseInt(currentMonth));
+			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(nomeMes);
 			if ( financMes.isPresent() ) {
 				List<FinancMesContaParc> financMesContasParc = financMes.get().getFinancMesContaParcs();
-				return ResponseEntity.ok(new AccountFinishMonthDto("Contas Finalizadas no mês de " + currentMonth, financMesContasParc.stream().filter(mp -> mp.getNrParcelaAtual() == mp.getNrTotParcela()).collect(Collectors.toList())));
+				return ResponseEntity.ok(new AccountFinishMonthDto("Contas Finalizadas no mês de " + nomeMes, financMesContasParc.stream().filter(mp -> mp.getNrParcelaAtual() == mp.getNrTotParcela()).collect(Collectors.toList())));
 			}
 			return ResponseEntity.notFound().build();
 		}
@@ -150,13 +152,14 @@ public class MonthFinanceController {
 		if ( currentMonth == null ) {
 			return ResponseEntity.notFound().build();
 		} else {
-			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(currentMonth);
+			String nomeMes = NomeMesFinanceiro.MES.nomeMes(Integer.parseInt(currentMonth));
+			Optional<FinancMes> financMes = monthFinanceRepository.findByDsFinancMes(nomeMes);
 			if ( financMes.isPresent() ) {
 				FinancMonthService financMonthService = new FinancMonthService();
-				FinancMes financMesNew = financMonthService.montarNovoMes(financMes.get(), monthFinanceRepository, monthFinanceAccountRepository, monthFinanceAccountInstallmentsRepository);
+				FinancMes financMesNew = financMonthService.montarNovoMes(financMes.get(), currentMonth, monthFinanceRepository, monthFinanceAccountRepository, monthFinanceAccountInstallmentsRepository);
 				
 				URI uri = uriBuilder.path("/monthFinance/{currentMonth}").buildAndExpand(financMesNew.getDsFinancMes()).toUri();
-				return ResponseEntity.created(uri).body(new GenerateMonthDto(financMes.get().getDsFinancMes(), "Novo mês registrado com sucesso!"));
+				return ResponseEntity.created(uri).body(new GenerateMonthDto(financMesNew.getDsFinancMes(), "Novo mês registrado com sucesso!"));
 
 			}
 			return ResponseEntity.notFound().build();

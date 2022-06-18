@@ -11,6 +11,7 @@ import br.com.projetos.peter.financiasPeter.controller.repository.MonthFinanceRe
 import br.com.projetos.peter.financiasPeter.modelo.FinancMes;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMesConta;
 import br.com.projetos.peter.financiasPeter.modelo.FinancMesContaParc;
+import br.com.projetos.peter.financiasPeter.modelo.NomeMesFinanceiro;
 
 public class FinancMonthService {
 
@@ -28,11 +29,12 @@ public class FinancMonthService {
 				dto.getVlInstallment(), dto.getNrTotInstallmente(), dto.getNrCurrentInstallment())).collect(Collectors.toList());
 	}
 
-	public FinancMes montarNovoMes(FinancMes financMes, MonthFinanceRepository monthFinanceRepository,
+	public FinancMes montarNovoMes(FinancMes financMes, String currentMonth, MonthFinanceRepository monthFinanceRepository,
 			MonthFinanceAccountRepository monthFinanceAccountRepository,
 			MonthFinanceAccountInstallmentsRepository monthFinanceAccountInstallmentsRepository) {
 		
 		FinancMes financMesNew = new FinancMes(financMes);
+		financMesNew.setDsFinancMes(NomeMesFinanceiro.MES.nomeMes(Integer.parseInt(currentMonth)+1));
 		monthFinanceRepository.save(financMesNew);
 
 		List<FinancMesConta> listFinancMesContasNew = generateAccount(financMesNew, financMes.getFinancMesContas());
@@ -41,6 +43,6 @@ public class FinancMonthService {
 		List<FinancMesContaParc> listFinancMesContasParcNew = generateAccountParcs(financMesNew, financMes.getFinancMesContaParcs().stream().filter(cp -> cp.getNrParcelaAtual() < cp.getNrTotParcela()).collect(Collectors.toList()));
 		monthFinanceAccountInstallmentsRepository.saveAll(listFinancMesContasParcNew);
 		
-		return financMes;
+		return financMesNew;
 	}
 }
